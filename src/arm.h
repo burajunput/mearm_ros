@@ -20,12 +20,15 @@ class arm{
     int clawClose(); //close claw
     int clawOpen();  //open claw
     void new_pos(double x, double y);
+    bool clawStatus();
     int getQ1();
     int getQ2();
     int getQ3();
+    int getAQ3();
     void setQ1(double q1);
-    void setQ2();
-    void setQ3();
+    void setQ2(double q2);
+    void setQ3(double q3);
+    void setQ2andQ3(double theta1, double theta2);
 };
 
 

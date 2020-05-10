@@ -4,7 +4,7 @@
 #include <sstream>
 using namespace std;
 
-arm mearm;
+
 
 
 /**
@@ -12,6 +12,8 @@ arm mearm;
  */
 int main(int argc, char **argv)
 {
+  arm mearm;
+  mearm.set_offset(-10, -15, 0);
   /**
    * The ros::init() function needs to see argc and argv so that it can perform
    * any ROS arguments and name remapping that were provided at the command line.
@@ -68,7 +70,10 @@ int main(int argc, char **argv)
   {
     std::cout << "Pick an option" << '\n';
     std::cout << "1: Rotate" << '\n';
-    std::cout << "2: New Coordinates" << '\n' << endl;
+    std::cout << "2: New X and Z Coordinates" << '\n';
+    std::cout << "3: Set Q2 and Q3" << '\n';
+    std::cout << "4: Claw Open/Close" << '\n';
+    std::cout << "5: Exit" << '\n';
     std::cin >> request;
     if(request == 1){
       do{
@@ -87,11 +92,42 @@ int main(int argc, char **argv)
       std::cin >> x;
       std::cout << "New z: ";
       std::cin >> z;
+
       mearm.new_pos(x, z);
       msg.data = mearm.getQ2();
       q2.publish(msg);
-      msg.data = mearm.getQ3();
+      msg.data = mearm.getAQ3();
       q3.publish(msg);
+      std::cout << endl;
+    }
+    else if(request == 3){
+      std::cout << "New Q2: ";
+      std::cin >> x;
+      std::cout << "New Q3: ";
+      std::cin >> z;
+
+      mearm.setQ2andQ3(x, z);
+      msg.data = mearm.getQ2();
+      q2.publish(msg);
+      msg.data = mearm.getAQ3();
+      q3.publish(msg);
+      std::cout << endl;
+    }
+    else if(request == 4){
+      if(mearm.clawStatus()){
+        std::cout << "Claw is open. Closing it." << '\n';
+        msg.data = mearm.clawClose();
+        claw.publish(msg);
+      }
+      else{
+        std::cout << "Claw is closed. Opening it." << '\n';
+        msg.data = mearm.clawOpen();
+        claw.publish(msg);
+      }
+
+    }
+    else if(request == 5){
+      break;
     }
 
 

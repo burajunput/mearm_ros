@@ -50,7 +50,7 @@ void arm::new_pos(double x, double y)
 
   this->q2 = theta1;
   this->q3 = theta2;
-  aQ3 += diff1 + diff2;
+  this->aQ3 += diff1 + diff2;
   //cout << "(theta1, theta2) = (" << theta1 << ", " << theta2 << ")" << endl;
 
 }
@@ -58,21 +58,54 @@ void arm::new_pos(double x, double y)
 int arm::getQ1(){
   double temp = round(this->q1);
   int q1 = (int) temp;
-  return q1;
+  return q1+off1;
 }
 
 int arm::getQ2(){
   double temp = round(this->q2);
   int q2 = (int) temp;
-  return q2;
+  return q2+off2;
 }
 
 int arm::getQ3(){
   double temp = round(this->q3);
   int q3 = (int) temp;
-  return q3;
+  return q3+off3;
+}
+
+int arm::getAQ3(){
+  double temp = round(this->aQ3);
+  int aQ3 = (int) temp;
+  return aQ3+off3;
 }
 
 void arm::setQ1(double q1){
   this->q1 = q1;
+}
+
+void arm::setQ2(double q2){
+  this->q2 = q2;
+}
+
+void arm::setQ3(double q3){
+  this->q3 = q3;
+}
+
+void arm::setQ2andQ3(double theta1, double theta2){
+  double diff1, diff2;
+  diff1 = theta1 - this->q2;
+  diff2 = theta2 - this->q3;
+  this->q2 = theta1;
+  this->q3 = theta2;
+  this->aQ3 += diff1 + diff2;
+}
+
+//claw status returns true if open and false if closed
+bool arm::clawStatus(){
+  if(this->claw == 25){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
