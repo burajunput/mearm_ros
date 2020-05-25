@@ -66,7 +66,7 @@ int main(int argc, char **argv)
   double y;
   double z;
   std_msgs::Int32 msg;
-  while (ros::ok())
+  while (ros::ok() && request != 5)
   {
     std::cout << "Pick an option" << '\n';
     std::cout << "1: Rotate" << '\n';
@@ -75,59 +75,64 @@ int main(int argc, char **argv)
     std::cout << "4: Claw Open/Close" << '\n';
     std::cout << "5: Exit" << '\n';
     std::cin >> request;
-    if(request == 1){
-      do{
-        std::cout << "Input a new angle of rotation for the mearm. (Default is 90). (Range between 0 and 180)" << '\n';
-        std::cin >> y;
-        if(y > 180 || y < 0){
-          std::cout << "Please enter a valid argument" << '\n' << endl;
+
+    switch(request){
+      case 1:
+        do{
+          std::cout << "Input a new angle of rotation for the mearm. (Default is 90). (Range between 0 and 180)" << '\n';
+          std::cin >> y;
+          if(y > 180 || y < 0){
+            std::cout << "Please enter a valid argument" << '\n' << endl;
+          }
+        }while (y > 180 || y < 0);
+        mearm.setQ1(y);
+        msg.data = mearm.getQ1();
+        q1.publish(msg);
+        break;
+
+      case 2:
+        std::cout << "New x: ";
+        std::cin >> x;
+        std::cout << "New z: ";
+        std::cin >> z;
+
+        mearm.new_pos(x, z);
+        msg.data = mearm.getQ2();
+        q2.publish(msg);
+        msg.data = mearm.getAQ3();
+        q3.publish(msg);
+        std::cout << endl;
+        break;
+
+      case 3:
+        std::cout << "New Q2: ";
+        std::cin >> x;
+        std::cout << "New Q3: ";
+        std::cin >> z;
+
+        mearm.setQ2andQ3(x, z);
+        msg.data = mearm.getQ2();
+        q2.publish(msg);
+        msg.data = mearm.getAQ3();
+        q3.publish(msg);
+        std::cout << endl;
+        break;
+
+      case 4:
+        if(mearm.clawStatus()){
+          std::cout << "Claw is open. Closing it." << '\n';
+          msg.data = mearm.clawClose();
+          claw.publish(msg);
         }
-      }while (y > 180 || y < 0);
-      mearm.setQ1(y);
-      msg.data = mearm.getQ1();
-      q1.publish(msg);
-    }
-    else if(request == 2){
-      std::cout << "New x: ";
-      std::cin >> x;
-      std::cout << "New z: ";
-      std::cin >> z;
+        else{
+          std::cout << "Claw is closed. Opening it." << '\n';
+          msg.data = mearm.clawOpen();
+          claw.publish(msg);
+        }
+        break;
 
-      mearm.new_pos(x, z);
-      msg.data = mearm.getQ2();
-      q2.publish(msg);
-      msg.data = mearm.getAQ3();
-      q3.publish(msg);
-      std::cout << endl;
-    }
-    else if(request == 3){
-      std::cout << "New Q2: ";
-      std::cin >> x;
-      std::cout << "New Q3: ";
-      std::cin >> z;
-
-      mearm.setQ2andQ3(x, z);
-      msg.data = mearm.getQ2();
-      q2.publish(msg);
-      msg.data = mearm.getAQ3();
-      q3.publish(msg);
-      std::cout << endl;
-    }
-    else if(request == 4){
-      if(mearm.clawStatus()){
-        std::cout << "Claw is open. Closing it." << '\n';
-        msg.data = mearm.clawClose();
-        claw.publish(msg);
-      }
-      else{
-        std::cout << "Claw is closed. Opening it." << '\n';
-        msg.data = mearm.clawOpen();
-        claw.publish(msg);
-      }
-
-    }
-    else if(request == 5){
-      break;
+      case 5:
+        break;
     }
 
 
